@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Send,
   X,
-  Sparkles,
+  Sparkles, 
   Download,
   CheckCircle2,
   Clock,
