@@ -14,10 +14,14 @@ import {
   ChevronUp,
   Bot,
   FileText,
-  CalendarCheck,
+  Users,
   ShieldCheck,
+  Menu,
   Zap,
+  Smartphone,
   GraduationCap,
+  BarChart3,
+  ExternalLink,
 } from 'lucide-react';
 
 import './landing.css';
@@ -30,24 +34,24 @@ interface ChatMessage {
 
 const FAQS = [
   {
-    question: 'How do students apply for duty-leave / permissions?',
+    question: 'How do students apply for duty-leave or permissions?',
     answer:
-      "Students can log in to the Student Portal, click 'New Permission Request', select their date, time slot/periods, reason category, and upload proof documents. Once submitted, it forwards to their assigned Faculty Advisor.",
+      "Students can log in to the Student Portal, click 'New Permission Request', select their date, time slot or periods, reason category, and upload proof documents. Once submitted, the request forwards to their assigned Faculty Advisor.",
   },
   {
-    question: 'How does Faculty mark attendance?',
+    question: 'How does faculty mark attendance?',
     answer:
-      'Faculty members log in, select the Year and Target Section (e.g. CSIT-B), select the specific period (P1 to P8), and tap student roll numbers to mark Present/Absent. Approved permissions automatically highlight in yellow.',
+      'Faculty members log in, select the year and target section, choose the specific period, and mark students Present or Absent. Approved permissions are highlighted automatically.',
   },
   {
     question: 'What is the HOD Direct Exemption feature?',
     answer:
-      'HODs can grant bulk attendance exemptions to multiple students directly for academic events, hackathons, sports, or official college duties without requiring individual student submissions.',
+      'HODs can grant attendance exemptions to multiple students for academic events, hackathons, sports, and official college duties without requiring individual student submissions.',
   },
   {
     question: 'How can I export attendance to WhatsApp?',
     answer:
-      "On the Public Permissions & Attendance page, tap 'Share to WhatsApp' or 'WhatsApp Report' to automatically format sorted presentees and absentees lists with Date and Time, ready to paste directly into official WhatsApp groups.",
+      "On the Public Permissions and Attendance page, use the WhatsApp sharing or report feature to format attendance lists with the date and time for sharing with official WhatsApp groups.",
   },
 ];
 
@@ -76,50 +80,47 @@ const SCREENSHOTS = [
 
 const FEATURES = [
   {
-    icon: Lock,
-    title: 'Flexible Login & Security',
+    icon: CheckCircle2,
+    title: 'Smart Attendance',
     description:
-      'Sign in with a password, 4-digit PIN, or registered biometric passkeys such as Touch ID, Face ID, and Windows Hello.',
+      'Manage student attendance with period-wise selection and streamlined faculty workflows.',
     color: 'orange',
   },
   {
-    icon: CheckCircle2,
-    title: 'Instant Permission Sync',
+    icon: FileText,
+    title: 'Digital Permissions',
     description:
-      'Approved duty-leave requests automatically highlight students across faculty attendance and public permission pages.',
-    color: 'green',
-  },
-  {
-    icon: Clock,
-    title: 'Period-Wise Attendance',
-    description:
-      'Manage attendance across periods P1–P8 with flexible period selection for everyday classroom workflows.',
+      'Submit and review duty-leave requests with supporting documents and approval tracking.',
     color: 'blue',
   },
   {
-    icon: FileText,
-    title: 'WhatsApp Reports',
+    icon: ShieldCheck,
+    title: 'Secure Access',
     description:
-      'Generate neatly formatted attendance reports with present and absent student lists, ready to share.',
+      'Use the authentication methods configured for your account to access the appropriate portal.',
     color: 'purple',
   },
-];
-
-const STATS = [
-  { value: '01', label: 'Unified platform', icon: CalendarCheck },
-  { value: 'P1–P8', label: 'Period management', icon: Clock },
-  { value: '24/7', label: 'Portal accessibility', icon: Zap },
+  {
+    icon: BarChart3,
+    title: 'Easy Reporting',
+    description:
+      'View attendance information and prepare formatted reports for sharing with your team.',
+    color: 'green',
+  },
 ];
 
 export default function LandingPage() {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
       content:
-        '👋 Hi! I am the AttendEase AI Support Assistant. Ask me anything about student permissions, faculty attendance, or portal features!',
+        '👋 Hi! Welcome to AttendEase AI Support. Ask me anything about student permissions, faculty attendance, or portal features!',
     },
   ]);
+
   const [inputMsg, setInputMsg] = useState('');
   const [isLoadingMsg, setIsLoadingMsg] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
@@ -135,9 +136,9 @@ export default function LandingPage() {
 
     if (!query || isLoadingMsg) return;
 
-    const updatedMessages = [
+    const updatedMessages: ChatMessage[] = [
       ...messages,
-      { role: 'user' as const, content: query },
+      { role: 'user', content: query },
     ];
 
     setMessages(updatedMessages);
@@ -174,7 +175,7 @@ export default function LandingPage() {
         {
           role: 'assistant',
           content:
-            'I could not connect to the AI assistant right now. Please try again later.',
+            'Unable to connect to AttendEase AI Support right now. Please try again later.',
         },
       ]);
     } finally {
@@ -183,38 +184,76 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="landing-page-wrapper">
+    <div className="landing-page-wrapper" id="home">
       {/* Navigation */}
       <nav className="landing-nav">
         <div className="landing-container landing-nav-inner">
-          <Link to="/" className="landing-nav-logo">
+          <Link
+            to="/"
+            className="landing-nav-logo"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
             <img
               src={logoImg}
               alt="AttendEase logo"
               className="landing-nav-logo-img"
             />
-            <span className="landing-nav-brand">
-              Attend<span>Ease</span>
-            </span>
+
+            <span className="landing-nav-brand">AttendEase</span>
           </Link>
 
-          <div className="landing-nav-links">
-            <a href="#features" className="landing-nav-text-link">
+          <button
+            type="button"
+            className="landing-mobile-menu"
+            aria-label="Toggle navigation menu"
+            aria-expanded={isMobileMenuOpen}
+            onClick={() => setIsMobileMenuOpen((open) => !open)}
+          >
+            {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+
+          <div
+            className={`landing-nav-links ${
+              isMobileMenuOpen ? 'landing-nav-links-open' : ''
+            }`}
+          >
+            <a
+              href="#features"
+              className="landing-nav-text-link"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               Features
             </a>
 
-            <a href="#faq" className="landing-nav-text-link">
-              FAQs
+            <a
+              href="#screenshots"
+              className="landing-nav-text-link"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Preview
+            </a>
+
+            <a
+              href="#faq"
+              className="landing-nav-text-link"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Support
             </a>
 
             <Link
               to="/permissions"
               className="landing-btn landing-btn-secondary"
+              onClick={() => setIsMobileMenuOpen(false)}
             >
               View Attendance
             </Link>
 
-            <Link to="/" className="landing-btn landing-btn-primary">
+            <Link
+              to="/"
+              className="landing-btn landing-btn-primary"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               Login <ArrowRight size={16} />
             </Link>
           </div>
@@ -223,201 +262,201 @@ export default function LandingPage() {
 
       {/* Hero */}
       <header className="landing-hero landing-container">
-        <motion.div
-          className="landing-hero-content"
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.65 }}
-        >
-          <div className="landing-hero-badge">
-            <Sparkles size={15} />
+        <div className="landing-hero-copy">
+          <motion.div
+            className="landing-hero-badge"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Sparkles size={14} />
             <span>Smarter Campus Management</span>
-          </div>
+          </motion.div>
 
-          <h1 className="landing-hero-title landing-display-font">
+          <motion.h1
+            className="landing-hero-title landing-display-font"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
             Attendance made
             <br />
-            <span className="landing-hero-highlight">simple. Smart. Seamless.</span>
-          </h1>
+            <span className="landing-gradient-text">simple and smart.</span>
+          </motion.h1>
 
-          <p className="landing-hero-sub">
-            Meet AttendEase — a unified attendance and permission management
-            platform built for SRKR Engineering College. Spend less time on
-            paperwork and more time on what matters.
-          </p>
+          <motion.p
+            className="landing-hero-sub"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            Meet AttendEase — a streamlined attendance and permission
+            management platform designed for SRKR Engineering College.
+            Manage attendance, handle permissions, and simplify everyday
+            academic workflows in one place.
+          </motion.p>
 
-          <div className="landing-hero-ctas">
+          <motion.div
+            className="landing-hero-ctas"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
             <Link to="/" className="landing-btn landing-btn-primary">
-              Get Started <ArrowRight size={17} />
+              Sign In to Portal <ArrowRight size={17} />
             </Link>
 
             <Link to="/permissions" className="landing-btn landing-btn-secondary">
               Explore Attendance
             </Link>
-
-            <a
-              href="https://github.com/gowthamkrishna27/AttendEase/releases/download/stable/AttendEase-v1.1.0.apk"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="landing-btn landing-btn-download"
-            >
-              <Download size={17} />
-              Android App
-            </a>
-          </div>
+          </motion.div>
 
           <div className="landing-hero-trust">
             <span className="landing-trust-icon">
               <ShieldCheck size={17} />
             </span>
-            <span>One platform for students, faculty and HODs</span>
-          </div>
-        </motion.div>
 
+            <span>One platform for students, faculty, and HODs</span>
+          </div>
+        </div>
+
+        {/* Glass Dashboard Preview */}
         <motion.div
           className="landing-hero-visual"
           initial={{ opacity: 0, scale: 0.94, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.15 }}
+          transition={{ duration: 0.7, delay: 0.2 }}
         >
-          <div className="landing-visual-orb landing-visual-orb-one" />
-          <div className="landing-visual-orb landing-visual-orb-two" />
+          <div className="landing-orb landing-orb-orange" />
+          <div className="landing-orb landing-orb-blue" />
 
-          <div className="landing-hero-glass-card">
-            <div className="landing-visual-topline">
-              <div className="landing-visual-brand">
+          <div className="landing-dashboard-card">
+            <div className="landing-dashboard-top">
+              <div className="landing-dashboard-brand">
                 <img src={logoImg} alt="" />
                 <div>
                   <strong>AttendEase</strong>
-                  <span>Campus dashboard</span>
+                  <span>Campus dashboard preview</span>
                 </div>
               </div>
 
-              <span className="landing-live-badge">
-                <span /> Live
+              <span className="landing-dashboard-status">
+                <span /> Smart workflow
               </span>
             </div>
 
-            <div className="landing-visual-welcome">
-              <span>YOUR CAMPUS, ORGANIZED</span>
-              <h2>Everything in one place.</h2>
-              <p>Attendance, permissions and reports.</p>
+            <div className="landing-dashboard-welcome">
+              <span className="landing-mini-label">WELCOME TO</span>
+              <h2>Attendance overview</h2>
+              <p>A simpler way to manage academic workflows.</p>
             </div>
 
-            <div className="landing-visual-metrics">
-              <div className="landing-visual-metric">
-                <div className="landing-metric-icon metric-orange">
-                  <CalendarCheck size={19} />
+            <div className="landing-dashboard-grid">
+              <div className="landing-stat-card">
+                <div className="landing-stat-icon orange">
+                  <Users size={19} />
+                </div>
+                <span>Student records</span>
+                <strong>Organized</strong>
+                <small>Easy to access</small>
+              </div>
+
+              <div className="landing-stat-card">
+                <div className="landing-stat-icon blue">
+                  <CheckCircle2 size={19} />
                 </div>
                 <span>Attendance</span>
                 <strong>Period-wise</strong>
+                <small>Simple tracking</small>
               </div>
 
-              <div className="landing-visual-metric">
-                <div className="landing-metric-icon metric-green">
-                  <CheckCircle2 size={19} />
-                </div>
-                <span>Permissions</span>
-                <strong>Easy tracking</strong>
-              </div>
-
-              <div className="landing-visual-metric">
-                <div className="landing-metric-icon metric-blue">
+              <div className="landing-stat-card">
+                <div className="landing-stat-icon purple">
                   <FileText size={19} />
                 </div>
+                <span>Permissions</span>
+                <strong>Digital</strong>
+                <small>Approval workflow</small>
+              </div>
+
+              <div className="landing-stat-card">
+                <div className="landing-stat-icon green">
+                  <Zap size={19} />
+                </div>
                 <span>Reports</span>
-                <strong>Quick sharing</strong>
+                <strong>Share-ready</strong>
+                <small>Convenient exports</small>
               </div>
             </div>
 
-            <div className="landing-visual-footer">
-              <div className="landing-visual-avatar">
-                <GraduationCap size={20} />
+            <div className="landing-dashboard-bottom">
+              <div className="landing-dashboard-bottom-icon">
+                <GraduationCap size={21} />
               </div>
+
               <div>
-                <strong>Built for campus life</strong>
-                <span>Less paperwork. More productivity.</span>
+                <strong>Built for campus workflows</strong>
+                <p>Students · Faculty · HODs</p>
               </div>
-              <Sparkles size={20} className="landing-visual-sparkle" />
+
+              <CheckCircle2 size={20} className="landing-dashboard-check" />
             </div>
           </div>
 
-          <div className="landing-floating-note landing-floating-note-top">
-            <span className="landing-floating-icon green">
+          <div className="landing-floating-card landing-floating-card-top">
+            <div className="landing-floating-icon">
               <CheckCircle2 size={18} />
-            </span>
+            </div>
             <div>
-              <strong>Permission tracked</strong>
-              <span>Workflow simplified</span>
+              <strong>Less paperwork</strong>
+              <span>Streamlined workflows</span>
             </div>
           </div>
 
-          <div className="landing-floating-note landing-floating-note-bottom">
-            <span className="landing-floating-icon orange">
-              <Zap size={18} />
-            </span>
+          <div className="landing-floating-card landing-floating-card-bottom">
+            <div className="landing-floating-icon blue">
+              <Smartphone size={18} />
+            </div>
             <div>
-              <strong>Made for classrooms</strong>
-              <span>Smart and efficient</span>
+              <strong>Mobile friendly</strong>
+              <span>Access on the go</span>
             </div>
           </div>
         </motion.div>
       </header>
 
-      {/* Quick highlights */}
-      <section className="landing-stats-section">
-        <div className="landing-container landing-stats-grid">
-          {STATS.map((stat, index) => {
-            const Icon = stat.icon;
-
-            return (
-              <motion.div
-                key={stat.label}
-                className="landing-stat-card"
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
-              >
-                <div className="landing-stat-icon">
-                  <Icon size={21} />
-                </div>
-                <div>
-                  <strong>{stat.value}</strong>
-                  <span>{stat.label}</span>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Screenshots */}
-      <section className="landing-marquee-wrapper" id="screenshots">
-        <div className="landing-container landing-showcase-heading">
-          <span className="landing-eyebrow">TAKE A CLOSER LOOK</span>
-          <h2 className="landing-display-font">
-            Designed around your workflow.
-          </h2>
-          <p>
-            A clear, practical interface for everyday campus tasks.
-          </p>
-        </div>
-
-        <div className="landing-marquee-container">
-          {[...SCREENSHOTS, ...SCREENSHOTS].map((item, idx) => (
-            <div key={`${item.title}-${idx}`} className="landing-screenshot-item">
-              <div className="landing-screenshot-frame">
-                <img
-                  src={item.src}
-                  alt={item.title}
-                  className="landing-phone-mockup"
-                  loading="lazy"
-                />
-              </div>
-              <p>{item.title}</p>
+      {/* Value Highlights */}
+      <section className="landing-highlights">
+        <div className="landing-container landing-highlights-grid">
+          <div className="landing-highlight">
+            <div className="landing-highlight-icon">
+              <CheckCircle2 size={21} />
             </div>
-          ))}
+            <div>
+              <strong>Attendance tracking</strong>
+              <span>Organized by period</span>
+            </div>
+          </div>
+
+          <div className="landing-highlight">
+            <div className="landing-highlight-icon">
+              <FileText size={21} />
+            </div>
+            <div>
+              <strong>Permission management</strong>
+              <span>Digital request workflow</span>
+            </div>
+          </div>
+
+          <div className="landing-highlight">
+            <div className="landing-highlight-icon">
+              <Lock size={21} />
+            </div>
+            <div>
+              <strong>Role-based portal</strong>
+              <span>Designed for campus roles</span>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -425,13 +464,19 @@ export default function LandingPage() {
       <section className="landing-features-section" id="features">
         <div className="landing-container">
           <div className="landing-section-heading">
-            <span className="landing-eyebrow">POWERFUL BY DESIGN</span>
+            <span className="landing-section-eyebrow">
+              <Sparkles size={14} /> EVERYTHING IN ONE PLACE
+            </span>
+
             <h2 className="landing-section-title landing-display-font">
-              Everything your campus needs.
+              Your campus workflow,
+              <br />
+              <span className="landing-gradient-text">reimagined.</span>
             </h2>
+
             <p className="landing-section-sub">
-              Thoughtful tools to simplify attendance and permission management
-              for the entire department.
+              Powerful tools that help simplify everyday attendance and
+              permission management.
             </p>
           </div>
 
@@ -442,15 +487,21 @@ export default function LandingPage() {
               return (
                 <motion.article
                   key={feature.title}
-                  className={`landing-feature-card landing-feature-${feature.color}`}
-                  initial={{ opacity: 0, y: 22 }}
+                  className="landing-feature-card"
+                  initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.45, delay: index * 0.08 }}
                 >
-                  <div className="landing-feature-icon">
-                    <Icon size={24} />
+                  <div
+                    className={`landing-feature-icon landing-feature-icon-${feature.color}`}
+                  >
+                    <Icon size={23} />
                   </div>
+
+                  <span className="landing-feature-number">
+                    0{index + 1}
+                  </span>
 
                   <h3 className="landing-feature-title landing-display-font">
                     {feature.title}
@@ -461,8 +512,8 @@ export default function LandingPage() {
                   </p>
 
                   <div className="landing-feature-bottom">
-                    <span>Built for productivity</span>
-                    <CheckCircle2 size={17} />
+                    <span>Explore functionality</span>
+                    <ArrowRight size={16} />
                   </div>
                 </motion.article>
               );
@@ -471,81 +522,104 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* How it helps */}
-      <section className="landing-workflow-section">
-        <div className="landing-container landing-workflow-inner">
-          <div className="landing-workflow-copy">
-            <span className="landing-eyebrow">LESS EFFORT, MORE CLARITY</span>
-            <h2 className="landing-display-font">
-              Your daily campus workflow, simplified.
-            </h2>
-            <p>
-              From submitting a permission request to reviewing attendance,
-              AttendEase brings essential campus workflows together in one
-              convenient place.
-            </p>
+      {/* Screenshots */}
+      <section className="landing-showcase-section" id="screenshots">
+        <div className="landing-container">
+          <div className="landing-section-heading">
+            <span className="landing-section-eyebrow">
+              <Smartphone size={14} /> PRODUCT PREVIEW
+            </span>
 
-            <div className="landing-workflow-list">
-              <div>
-                <CheckCircle2 size={19} />
-                <span>Submit and review permission requests</span>
-              </div>
-              <div>
-                <CheckCircle2 size={19} />
-                <span>Manage period-wise attendance</span>
-              </div>
-              <div>
-                <CheckCircle2 size={19} />
-                <span>Share attendance reports with ease</span>
-              </div>
+            <h2 className="landing-section-title landing-display-font">
+              A closer look at
+              <br />
+              <span className="landing-gradient-text">AttendEase.</span>
+            </h2>
+
+            <p className="landing-section-sub">
+              Explore the interfaces built for students, faculty, and
+              administrators.
+            </p>
+          </div>
+        </div>
+
+        <div className="landing-marquee-wrapper">
+          <div className="landing-marquee-container">
+            {[...SCREENSHOTS, ...SCREENSHOTS].map((item, index) => (
+              <motion.article
+                key={`${item.title}-${index}`}
+                className="landing-showcase-item"
+                whileHover={{ y: -8 }}
+              >
+                <div className="landing-phone-frame">
+                  <img
+                    src={item.src}
+                    alt={item.title}
+                    className="landing-phone-mockup"
+                    loading="lazy"
+                  />
+                </div>
+
+                <p>{item.title}</p>
+              </motion.article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Android Download CTA */}
+      <section className="landing-download-section">
+        <div className="landing-container">
+          <div className="landing-download-card">
+            <div className="landing-download-decoration landing-download-decoration-one" />
+            <div className="landing-download-decoration landing-download-decoration-two" />
+
+            <div className="landing-download-content">
+              <span className="landing-section-eyebrow landing-download-eyebrow">
+                <Smartphone size={14} /> ATTENDEASE FOR ANDROID
+              </span>
+
+              <h2 className="landing-display-font">
+                Your campus,
+                <br />
+                <span>closer than ever.</span>
+              </h2>
+
+              <p>
+                Access AttendEase on your Android device with the available
+                application download.
+              </p>
+
+              <a
+                href="https://github.com/gowthamkrishna27/AttendEase/releases/download/stable/AttendEase-v1.1.0.apk"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="landing-btn landing-btn-download"
+              >
+                <Download size={18} />
+                Download Android App
+                <ExternalLink size={15} />
+              </a>
+
+              <span className="landing-download-note">
+                Download availability depends on the release link.
+              </span>
             </div>
 
-            <Link to="/permissions" className="landing-btn landing-btn-primary">
-              Explore the Portal <ArrowRight size={17} />
-            </Link>
-          </div>
+            <div className="landing-download-visual">
+              <div className="landing-download-phone">
+                <div className="landing-download-phone-camera" />
+                <img src={logoImg} alt="AttendEase app logo" />
+                <strong>AttendEase</strong>
+                <span>Campus management</span>
 
-          <div className="landing-workflow-visual">
-            <div className="landing-workflow-card">
-              <div className="landing-workflow-card-header">
-                <div className="landing-workflow-card-icon">
-                  <CalendarCheck size={21} />
+                <div className="landing-download-phone-line" />
+                <div className="landing-download-phone-line short" />
+
+                <div className="landing-download-phone-status">
+                  <CheckCircle2 size={15} />
+                  Simple. Smart. Connected.
                 </div>
-                <div>
-                  <strong>Permission workflow</strong>
-                  <span>A simpler process</span>
-                </div>
-              </div>
-
-              <div className="landing-workflow-step">
-                <span className="landing-workflow-step-number">01</span>
-                <div>
-                  <strong>Submit a request</strong>
-                  <p>Provide the date, periods and reason.</p>
-                </div>
-                <CheckCircle2 size={18} />
-              </div>
-
-              <div className="landing-workflow-connector" />
-
-              <div className="landing-workflow-step">
-                <span className="landing-workflow-step-number">02</span>
-                <div>
-                  <strong>Review and approval</strong>
-                  <p>The request follows the assigned workflow.</p>
-                </div>
-                <CheckCircle2 size={18} />
-              </div>
-
-              <div className="landing-workflow-connector" />
-
-              <div className="landing-workflow-step">
-                <span className="landing-workflow-step-number">03</span>
-                <div>
-                  <strong>Track attendance</strong>
-                  <p>View permission and attendance information.</p>
-                </div>
-                <CheckCircle2 size={18} />
               </div>
             </div>
           </div>
@@ -556,97 +630,102 @@ export default function LandingPage() {
       <section className="landing-faq-section" id="faq">
         <div className="landing-container landing-faq-container">
           <div className="landing-section-heading">
-            <span className="landing-eyebrow">HERE TO HELP</span>
-            <h2 className="landing-display-font">
-              Frequently asked questions.
+            <span className="landing-section-eyebrow">
+              <Sparkles size={14} /> HELP &amp; ANSWERS
+            </span>
+
+            <h2 className="landing-section-title landing-display-font">
+              Got questions?
+              <br />
+              <span className="landing-gradient-text">We've got answers.</span>
             </h2>
+
             <p className="landing-section-sub">
-              Find quick answers to common questions about AttendEase.
+              Find quick answers about attendance, permissions, and portal
+              features.
             </p>
           </div>
 
           <div className="landing-faq-list">
-            {FAQS.map((faq, idx) => (
-              <div
+            {FAQS.map((faq, index) => (
+              <article
                 key={faq.question}
                 className={`landing-faq-item ${
-                  activeFaq === idx ? 'landing-faq-active' : ''
+                  activeFaq === index ? 'landing-faq-item-active' : ''
                 }`}
               >
                 <button
                   type="button"
-                  aria-expanded={activeFaq === idx}
+                  aria-expanded={activeFaq === index}
                   onClick={() =>
-                    setActiveFaq(activeFaq === idx ? null : idx)
+                    setActiveFaq(activeFaq === index ? null : index)
                   }
                   className="landing-faq-question"
                 >
-                  <span>{faq.question}</span>
-                  <span className="landing-faq-chevron">
-                    {activeFaq === idx ? (
-                      <ChevronUp size={19} />
-                    ) : (
-                      <ChevronDown size={19} />
-                    )}
+                  <span className="landing-faq-index">
+                    {String(index + 1).padStart(2, '0')}
                   </span>
+
+                  <span>{faq.question}</span>
+
+                  {activeFaq === index ? (
+                    <ChevronUp size={19} />
+                  ) : (
+                    <ChevronDown size={19} />
+                  )}
                 </button>
 
                 <AnimatePresence initial={false}>
-                  {activeFaq === idx && (
+                  {activeFaq === index && (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.25 }}
-                      className="landing-faq-answer-wrap"
+                      className="landing-faq-answer-wrapper"
                     >
                       <p className="landing-faq-answer">{faq.answer}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Final call to action */}
-      <section className="landing-cta-section">
+      {/* Final CTA */}
+      <section className="landing-final-cta">
         <div className="landing-container">
-          <div className="landing-cta-card">
-            <div className="landing-cta-decoration landing-cta-decoration-one" />
-            <div className="landing-cta-decoration landing-cta-decoration-two" />
+          <div className="landing-final-cta-card">
+            <div className="landing-final-cta-glow" />
 
-            <div className="landing-cta-content">
-              <span className="landing-cta-eyebrow">
-                WELCOME TO ATTENDEASE
-              </span>
-              <h2 className="landing-display-font">
-                Make campus management
-                <br />
-                a little easier.
-              </h2>
-              <p>
-                Access your portal and experience a more organized way to
-                manage attendance and permissions.
-              </p>
+            <span className="landing-final-cta-label">
+              <Sparkles size={15} /> READY TO GET STARTED?
+            </span>
 
-              <div className="landing-cta-actions">
-                <Link to="/" className="landing-btn landing-btn-cta">
-                  Get Started <ArrowRight size={17} />
-                </Link>
-                <Link
-                  to="/permissions"
-                  className="landing-btn landing-btn-cta-secondary"
-                >
-                  View Attendance
-                </Link>
-              </div>
-            </div>
+            <h2 className="landing-display-font">
+              Make attendance
+              <br />
+              <span>easier with AttendEase.</span>
+            </h2>
 
-            <div className="landing-cta-icon">
-              <img src={logoImg} alt="AttendEase" />
-              <Sparkles size={25} />
+            <p>
+              Step into a simpler campus workflow with attendance and
+              permission management in one place.
+            </p>
+
+            <div className="landing-final-cta-buttons">
+              <Link to="/" className="landing-btn landing-btn-primary">
+                Login to AttendEase <ArrowRight size={17} />
+              </Link>
+
+              <Link
+                to="/permissions"
+                className="landing-btn landing-btn-secondary"
+              >
+                View Public Attendance
+              </Link>
             </div>
           </div>
         </div>
@@ -655,39 +734,36 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="landing-footer">
         <div className="landing-container landing-footer-inner">
-          <Link to="/" className="landing-nav-logo">
-            <img
-              src={logoImg}
-              alt="AttendEase logo"
-              className="landing-footer-logo"
-            />
-            <span className="landing-nav-brand">
-              Attend<span>Ease</span>
-            </span>
+          <Link to="/" className="landing-footer-brand">
+            <img src={logoImg} alt="" />
+            <span>AttendEase</span>
           </Link>
 
-          <p>Making attendance management simpler.</p>
+          <p>
+            Simplifying attendance and permission management at SRKR
+            Engineering College.
+          </p>
 
           <div className="landing-footer-links">
-            <Link to="/">Login</Link>
-            <Link to="/permissions">Public Attendance</Link>
-            <a href="#faq">FAQs</a>
+            <a href="#home">Back to top ↑</a>
+            <a href="#features">Features</a>
+            <a href="#faq">Support</a>
           </div>
 
-          <span className="landing-footer-copyright">
+          <span className="landing-footer-copy">
             © {new Date().getFullYear()} AttendEase
           </span>
         </div>
       </footer>
 
-      {/* AI Chatbot */}
+      {/* Floating AI Chatbot */}
       <div className="landing-chat-fab">
         <AnimatePresence>
           {isChatOpen && (
             <motion.div
-              initial={{ opacity: 0, y: 18, scale: 0.96 }}
+              initial={{ opacity: 0, y: 20, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 18, scale: 0.96 }}
+              exit={{ opacity: 0, y: 20, scale: 0.96 }}
               className="landing-chat-window"
             >
               <div className="landing-chat-header">
@@ -695,12 +771,10 @@ export default function LandingPage() {
                   <div className="landing-chat-avatar">
                     <Sparkles size={17} />
                   </div>
+
                   <div>
                     <h4>AttendEase AI Support</h4>
-                    <span>
-                      <span className="landing-chat-status-dot" />
-                      Assistant available
-                    </span>
+                    <span>Ask us about the portal</span>
                   </div>
                 </div>
 
@@ -715,9 +789,9 @@ export default function LandingPage() {
               </div>
 
               <div className="landing-chat-messages">
-                {messages.map((msg, idx) => (
+                {messages.map((msg, index) => (
                   <div
-                    key={idx}
+                    key={index}
                     className={
                       msg.role === 'user'
                         ? 'landing-msg-user'
@@ -730,9 +804,7 @@ export default function LandingPage() {
 
                 {isLoadingMsg && (
                   <div className="landing-msg-bot landing-chat-thinking">
-                    <span />
-                    <span />
-                    <span />
+                    Thinking...
                   </div>
                 )}
 
@@ -742,14 +814,14 @@ export default function LandingPage() {
               <div className="landing-chat-suggestions">
                 {[
                   'How to request permission?',
-                  'WhatsApp Format?',
-                  'HOD Exemption?',
+                  'WhatsApp format?',
+                  'HOD exemption?',
                 ].map((suggestion) => (
                   <button
-                    type="button"
                     key={suggestion}
-                    onClick={() => handleSendMessage(suggestion)}
+                    type="button"
                     disabled={isLoadingMsg}
+                    onClick={() => handleSendMessage(suggestion)}
                   >
                     {suggestion}
                   </button>
@@ -768,15 +840,13 @@ export default function LandingPage() {
                   value={inputMsg}
                   onChange={(event) => setInputMsg(event.target.value)}
                   placeholder="Ask a question..."
-                  aria-label="Ask AttendEase AI"
-                  className="landing-chat-input"
+                  aria-label="Ask AttendEase AI Support"
                 />
 
                 <button
                   type="submit"
                   disabled={isLoadingMsg || !inputMsg.trim()}
                   aria-label="Send message"
-                  className="landing-chat-send"
                 >
                   <Send size={17} />
                 </button>
@@ -787,13 +857,13 @@ export default function LandingPage() {
 
         <button
           type="button"
-          onClick={() => setIsChatOpen(!isChatOpen)}
+          onClick={() => setIsChatOpen((open) => !open)}
           className="landing-fab-btn"
-          title="Ask AttendEase AI Assistant"
-          aria-label={isChatOpen ? 'Close AI assistant' : 'Open AI assistant'}
-          aria-expanded={isChatOpen}
+          aria-label={isChatOpen ? 'Close AI support' : 'Open AI support'}
+          title="Ask AttendEase AI Support"
         >
-          {isChatOpen ? <X size={24} /> : <Bot size={25} />}
+          {isChatOpen ? <X size={24} /> : <Bot size={26} />}
+          {!isChatOpen && <span className="landing-fab-pulse" />}
         </button>
       </div>
     </div>
